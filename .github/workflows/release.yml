@@ -31,12 +31,13 @@ jobs:
 
       - name: Package VSIX
         run: pnpm run package
-
-      - name: Publish to npm
-        working-directory: packages/atlassian-server
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    
+      - name: Upload VSIX
+        uses: actions/upload-artifact@v4
+        with:
+            name: vscode-extension
+            path: packages/ssh-vscode-extension/*.vsix
+            retention-days: 90
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
