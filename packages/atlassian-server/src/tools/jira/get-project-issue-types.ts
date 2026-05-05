@@ -1,11 +1,9 @@
-import { z } from "zod";
-import { JiraClient } from "../../jira/client.js";
-import { JiraCreateMetaIssueType } from "../../jira/types.js";
+import { z } from 'zod';
+import { JiraClient } from '../../jira/client.js';
+import { JiraCreateMetaIssueType } from '../../jira/types.js';
 
 export const getJiraProjectIssueTypesMetadataSchema = z.object({
-  projectKeyOrId: z
-    .string()
-    .describe("Project key or numeric ID, e.g. 'STOR' or '10000'"),
+  projectKeyOrId: z.string().describe("Project key or numeric ID, e.g. 'STOR' or '10000'"),
 });
 
 export type GetJiraProjectIssueTypesMetadataInput = z.infer<
@@ -29,9 +27,9 @@ export async function getJiraProjectIssueTypesMetadata(
     // Fallback for Jira < 8.4
     const result = await client.get<{
       projects: Array<{ issuetypes: JiraCreateMetaIssueType[] }>;
-    }>("/rest/api/2/issue/createmeta", {
+    }>('/rest/api/2/issue/createmeta', {
       projectKeys: input.projectKeyOrId,
-      expand: "projects.issuetypes",
+      expand: 'projects.issuetypes',
     });
     issueTypes = result.projects?.[0]?.issuetypes || [];
   }
@@ -42,7 +40,7 @@ export async function getJiraProjectIssueTypesMetadata(
 
   let output = `Issue types for project ${input.projectKeyOrId}:\n\n`;
   for (const it of issueTypes) {
-    output += `• ${it.name} (ID: ${it.id})${it.subtask ? " [Subtask]" : ""}\n`;
+    output += `• ${it.name} (ID: ${it.id})${it.subtask ? ' [Subtask]' : ''}\n`;
     if (it.description) {
       output += `  ${it.description}\n`;
     }

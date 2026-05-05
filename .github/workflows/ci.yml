@@ -42,6 +42,7 @@ jobs:
         run: pnpm run build
 
       - name: Package VSIX
+        if: matrix.node-version == 20
         run: pnpm run package
 
       - name: Upload VSIX
@@ -50,42 +51,3 @@ jobs:
         with:
           name: vsix
           path: packages/atlassian-vscode-extension/*.vsix
-
-  release:
-    needs: ci
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-          registry-url: https://registry.npmjs.org
-
-      - run: pnpm install --frozen-lockfile
-
-      - name: Build
-        run: pnpm run build
-
-      - name: Package VSIX
-        run: pnpm run package
-
-      - name: Publish to npm
-        working-directory: packages/atlassian-server
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: packages/atlassian-vscode-extension/*.vsix
-          generate_release_notes: true

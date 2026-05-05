@@ -66,7 +66,7 @@ export interface JiraComment {
   created: string;
   updated: string;
   visibility?: {
-    type: "role" | "group";
+    type: 'role' | 'group';
     value: string;
   };
 }

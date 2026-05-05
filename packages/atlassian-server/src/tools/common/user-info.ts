@@ -1,12 +1,12 @@
-import { JiraClient } from "../../jira/client.js";
-import { JiraUser } from "../../jira/types.js";
+import { JiraClient } from '../../jira/client.js';
+import { JiraUser } from '../../jira/types.js';
 
 export async function atlassianUserInfo(
   jiraClient: JiraClient,
   jiraBaseUrl: string,
   confluenceBaseUrl: string
 ): Promise<string> {
-  const user = await jiraClient.get<JiraUser>("/rest/api/2/myself");
+  const user = await jiraClient.get<JiraUser>('/rest/api/2/myself');
 
   let output = `Authenticated User Info:\n\n`;
   output += `Username: ${user.name}\n`;

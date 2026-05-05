@@ -1,34 +1,17 @@
-import { z } from "zod";
-import { JiraClient } from "../../jira/client.js";
+import { z } from 'zod';
+import { JiraClient } from '../../jira/client.js';
 
 export const createJiraIssueSchema = z.object({
   projectKey: z.string().describe("Project key, e.g. 'STOR'"),
-  issueType: z
-    .string()
-    .describe("Issue type name or ID, e.g. 'Bug', 'Story', 'Task'"),
-  summary: z.string().describe("Issue summary/title"),
-  description: z
-    .string()
-    .optional()
-    .describe("Issue description (plain text or Jira wiki markup)"),
-  assignee: z.string().optional().describe("Assignee username"),
-  priority: z
-    .string()
-    .optional()
-    .describe("Priority name, e.g. 'High', 'Medium', 'Low'"),
-  labels: z.array(z.string()).optional().describe("List of label strings"),
-  components: z
-    .array(z.string())
-    .optional()
-    .describe("List of component names"),
-  fixVersions: z
-    .array(z.string())
-    .optional()
-    .describe("List of fix version names"),
-  parent: z
-    .string()
-    .optional()
-    .describe("Parent issue key (for subtasks)"),
+  issueType: z.string().describe("Issue type name or ID, e.g. 'Bug', 'Story', 'Task'"),
+  summary: z.string().describe('Issue summary/title'),
+  description: z.string().optional().describe('Issue description (plain text or Jira wiki markup)'),
+  assignee: z.string().optional().describe('Assignee username'),
+  priority: z.string().optional().describe("Priority name, e.g. 'High', 'Medium', 'Low'"),
+  labels: z.array(z.string()).optional().describe('List of label strings'),
+  components: z.array(z.string()).optional().describe('List of component names'),
+  fixVersions: z.array(z.string()).optional().describe('List of fix version names'),
+  parent: z.string().optional().describe('Parent issue key (for subtasks)'),
   customFields: z
     .record(z.unknown())
     .optional()
@@ -67,10 +50,9 @@ export async function createJiraIssue(
     Object.assign(fields, input.customFields);
   }
 
-  const result = await client.post<{ id: string; key: string; self: string }>(
-    "/rest/api/2/issue",
-    { fields }
-  );
+  const result = await client.post<{ id: string; key: string; self: string }>('/rest/api/2/issue', {
+    fields,
+  });
 
   return `Issue created successfully\nKey: ${result.key}\nID: ${result.id}\nURL: ${baseUrl}/browse/${result.key}`;
 }

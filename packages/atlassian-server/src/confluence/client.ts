@@ -1,5 +1,5 @@
-import { ConfluenceConfig } from "../config.js";
-import { buildAuthHeader } from "../utils/auth.js";
+import { ConfluenceConfig } from '../config.js';
+import { buildAuthHeader } from '../utils/auth.js';
 
 export class ConfluenceApiError extends Error {
   constructor(
@@ -8,7 +8,7 @@ export class ConfluenceApiError extends Error {
     public readonly body: string
   ) {
     super(`Confluence API error ${status} ${statusText}: ${body}`);
-    this.name = "ConfluenceApiError";
+    this.name = 'ConfluenceApiError';
   }
 }
 
@@ -37,10 +37,10 @@ export class ConfluenceClient {
     }
 
     const response = await fetch(url.toString(), {
-      method: "GET",
+      method: 'GET',
       headers: {
         Authorization: this.authHeader,
-        Accept: "application/json",
+        Accept: 'application/json',
       },
       signal: AbortSignal.timeout(this.timeoutMs),
     });
@@ -55,12 +55,12 @@ export class ConfluenceClient {
 
   async post<T>(path: string, body: unknown): Promise<T> {
     const response = await fetch(`${this.baseUrl}${path}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
         Authorization: this.authHeader,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Atlassian-Token": "no-check",
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-Atlassian-Token': 'no-check',
       },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(this.timeoutMs),
@@ -68,11 +68,7 @@ export class ConfluenceClient {
 
     if (!response.ok) {
       const respBody = await response.text();
-      throw new ConfluenceApiError(
-        response.status,
-        response.statusText,
-        respBody
-      );
+      throw new ConfluenceApiError(response.status, response.statusText, respBody);
     }
 
     return (await response.json()) as T;
@@ -80,12 +76,12 @@ export class ConfluenceClient {
 
   async put<T>(path: string, body: unknown): Promise<T> {
     const response = await fetch(`${this.baseUrl}${path}`, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
         Authorization: this.authHeader,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Atlassian-Token": "no-check",
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-Atlassian-Token': 'no-check',
       },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(this.timeoutMs),
@@ -93,11 +89,7 @@ export class ConfluenceClient {
 
     if (!response.ok) {
       const respBody = await response.text();
-      throw new ConfluenceApiError(
-        response.status,
-        response.statusText,
-        respBody
-      );
+      throw new ConfluenceApiError(response.status, response.statusText, respBody);
     }
 
     return (await response.json()) as T;
@@ -105,10 +97,10 @@ export class ConfluenceClient {
 
   async delete(path: string): Promise<void> {
     const response = await fetch(`${this.baseUrl}${path}`, {
-      method: "DELETE",
+      method: 'DELETE',
       headers: {
         Authorization: this.authHeader,
-        "X-Atlassian-Token": "no-check",
+        'X-Atlassian-Token': 'no-check',
       },
       signal: AbortSignal.timeout(this.timeoutMs),
     });

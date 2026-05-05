@@ -1,7 +1,7 @@
-import { z } from "zod";
-import { JiraClient } from "../../jira/client.js";
-import { JiraSearchResult } from "../../jira/types.js";
-import { formatJiraSearchResults } from "../../utils/format.js";
+import { z } from 'zod';
+import { JiraClient } from '../../jira/client.js';
+import { JiraSearchResult } from '../../jira/types.js';
+import { formatJiraSearchResults } from '../../utils/format.js';
 
 export const searchJiraIssuesUsingJqlSchema = z.object({
   jql: z
@@ -15,20 +15,12 @@ export const searchJiraIssuesUsingJqlSchema = z.object({
     .describe(
       "Fields to return per issue. Defaults to: summary, status, assignee, priority, issuetype, created, updated. Use '*all' for all fields."
     ),
-  maxResults: z
-    .number()
-    .optional()
-    .describe("Max results to return (default: 50, max: 100)"),
-  startAt: z.number().optional().describe("Pagination offset (default: 0)"),
-  orderBy: z
-    .string()
-    .optional()
-    .describe("JQL ORDER BY clause, e.g. 'created DESC'"),
+  maxResults: z.number().optional().describe('Max results to return (default: 50, max: 100)'),
+  startAt: z.number().optional().describe('Pagination offset (default: 0)'),
+  orderBy: z.string().optional().describe("JQL ORDER BY clause, e.g. 'created DESC'"),
 });
 
-export type SearchJiraIssuesUsingJqlInput = z.infer<
-  typeof searchJiraIssuesUsingJqlSchema
->;
+export type SearchJiraIssuesUsingJqlInput = z.infer<typeof searchJiraIssuesUsingJqlSchema>;
 
 export async function searchJiraIssuesUsingJql(
   client: JiraClient,
@@ -46,29 +38,20 @@ export async function searchJiraIssuesUsingJql(
   const body = {
     jql,
     fields: input.fields || [
-      "summary",
-      "status",
-      "assignee",
-      "priority",
-      "issuetype",
-      "created",
-      "updated",
+      'summary',
+      'status',
+      'assignee',
+      'priority',
+      'issuetype',
+      'created',
+      'updated',
     ],
     maxResults,
     startAt: input.startAt ?? 0,
   };
 
-  const result = await client.post<JiraSearchResult>(
-    "/rest/api/2/search",
-    body
-  );
+  const result = await client.post<JiraSearchResult>('/rest/api/2/search', body);
 
   const header = `JQL: ${jql}\n`;
-  return (
-    header +
-    formatJiraSearchResults(
-      result as unknown as Record<string, unknown>,
-      baseUrl
-    )
-  );
+  return header + formatJiraSearchResults(result as unknown as Record<string, unknown>, baseUrl);
 }

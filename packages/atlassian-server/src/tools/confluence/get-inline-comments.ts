@@ -1,13 +1,10 @@
-import { z } from "zod";
-import { ConfluenceClient } from "../../confluence/client.js";
-import { ConfluencePageList, ConfluencePage } from "../../confluence/types.js";
+import { z } from 'zod';
+import { ConfluenceClient } from '../../confluence/client.js';
+import { ConfluencePageList, ConfluencePage } from '../../confluence/types.js';
 
 export const getConfluencePageInlineCommentsSchema = z.object({
-  pageId: z.string().describe("Confluence page ID"),
-  maxResults: z
-    .number()
-    .optional()
-    .describe("Max inline comments to return (default: 25)"),
+  pageId: z.string().describe('Confluence page ID'),
+  maxResults: z.number().optional().describe('Max inline comments to return (default: 25)'),
 });
 
 export type GetConfluencePageInlineCommentsInput = z.infer<
@@ -21,9 +18,9 @@ export async function getConfluencePageInlineComments(
   const result = await client.get<ConfluencePageList>(
     `/rest/api/content/${encodeURIComponent(input.pageId)}/child/comment`,
     {
-      expand: "body.view,version,extensions.inlineProperties",
+      expand: 'body.view,version,extensions.inlineProperties',
       limit: input.maxResults ?? 25,
-      depth: "all",
+      depth: 'all',
     }
   );
 
@@ -40,14 +37,14 @@ export async function getConfluencePageInlineComments(
   for (const comment of inlineComments) {
     const author = comment.version?.by;
     const date = comment.version?.when;
-    const body = comment.body?.view?.value || comment.body?.storage?.value || "";
+    const body = comment.body?.view?.value || comment.body?.storage?.value || '';
     const selection = comment.extensions?.inlineProperties?.originalSelection;
 
-    output += `[${comment.id}] ${author?.displayName ?? "Unknown"} (${date ? date.split("T")[0] : "?"}):\n`;
+    output += `[${comment.id}] ${author?.displayName ?? 'Unknown'} (${date ? date.split('T')[0] : '?'}):\n`;
     if (selection) {
       output += `  Anchored to: "${selection}"\n`;
     }
-    output += `  ${body.replace(/<[^>]*>/g, "").slice(0, 500)}\n\n`;
+    output += `  ${body.replace(/<[^>]*>/g, '').slice(0, 500)}\n\n`;
   }
   return output;
 }

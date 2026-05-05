@@ -1,12 +1,10 @@
-import { z } from "zod";
-import { JiraClient } from "../../jira/client.js";
-import { JiraFieldMeta } from "../../jira/types.js";
+import { z } from 'zod';
+import { JiraClient } from '../../jira/client.js';
+import { JiraFieldMeta } from '../../jira/types.js';
 
 export const getJiraIssueTypeMetaWithFieldsSchema = z.object({
-  projectKeyOrId: z
-    .string()
-    .describe("Project key or numeric ID, e.g. 'STOR' or '10000'"),
-  issueTypeId: z.string().describe("Issue type ID"),
+  projectKeyOrId: z.string().describe("Project key or numeric ID, e.g. 'STOR' or '10000'"),
+  issueTypeId: z.string().describe('Issue type ID'),
 });
 
 export type GetJiraIssueTypeMetaWithFieldsInput = z.infer<
@@ -26,19 +24,17 @@ export async function getJiraIssueTypeMetaWithFields(
     const result = await client.get<{ values: JiraFieldMeta[] }>(
       `/rest/api/2/issue/createmeta/${encodeURIComponent(input.projectKeyOrId)}/issuetypes/${encodeURIComponent(input.issueTypeId)}`
     );
-    fields = Object.fromEntries(
-      (result.values || []).map((f) => [f.key, f])
-    );
+    fields = Object.fromEntries((result.values || []).map((f) => [f.key, f]));
   } else {
     // Fallback for Jira < 8.4
     const result = await client.get<{
       projects: Array<{
         issuetypes: Array<{ id: string; fields: Record<string, JiraFieldMeta> }>;
       }>;
-    }>("/rest/api/2/issue/createmeta", {
+    }>('/rest/api/2/issue/createmeta', {
       projectKeys: input.projectKeyOrId,
       issuetypeIds: input.issueTypeId,
-      expand: "projects.issuetypes.fields",
+      expand: 'projects.issuetypes.fields',
     });
 
     const project = result.projects?.[0];
@@ -55,7 +51,7 @@ export async function getJiraIssueTypeMetaWithFields(
   const optionalFields: string[] = [];
 
   for (const [key, meta] of Object.entries(fields)) {
-    const line = `  ${meta.name} (${key}) — type: ${meta.schema.type}${meta.schema.items ? `[${meta.schema.items}]` : ""}${meta.allowedValues ? ` [${meta.allowedValues.length} allowed values]` : ""}`;
+    const line = `  ${meta.name} (${key}) — type: ${meta.schema.type}${meta.schema.items ? `[${meta.schema.items}]` : ''}${meta.allowedValues ? ` [${meta.allowedValues.length} allowed values]` : ''}`;
     if (meta.required) {
       requiredFields.push(line);
     } else {
@@ -63,8 +59,8 @@ export async function getJiraIssueTypeMetaWithFields(
     }
   }
 
-  output += `Required fields:\n${requiredFields.join("\n")}\n\n`;
-  output += `Optional fields:\n${optionalFields.join("\n")}\n`;
+  output += `Required fields:\n${requiredFields.join('\n')}\n\n`;
+  output += `Optional fields:\n${optionalFields.join('\n')}\n`;
 
   return output;
 }

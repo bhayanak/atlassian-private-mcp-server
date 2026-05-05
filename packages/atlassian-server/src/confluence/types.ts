@@ -1,5 +1,5 @@
 export interface ConfluenceUser {
-  type: "known" | "anonymous" | "unknown";
+  type: 'known' | 'anonymous' | 'unknown';
   username: string;
   displayName: string;
   userKey?: string;
@@ -18,9 +18,9 @@ export interface ConfluenceSpace {
   id: number;
   key: string;
   name: string;
-  type: "global" | "personal";
+  type: 'global' | 'personal';
   description?: {
-    plain?: { value: string; representation: "plain" };
+    plain?: { value: string; representation: 'plain' };
   };
   homepage?: ConfluencePage;
   _links: {
@@ -30,16 +30,16 @@ export interface ConfluenceSpace {
 }
 
 export interface ConfluenceBody {
-  storage?: { value: string; representation: "storage" };
-  view?: { value: string; representation: "view" };
-  wiki?: { value: string; representation: "wiki" };
+  storage?: { value: string; representation: 'storage' };
+  view?: { value: string; representation: 'view' };
+  wiki?: { value: string; representation: 'wiki' };
 }
 
 export interface ConfluencePage {
   id: string;
-  type: "page" | "blogpost" | "comment" | "attachment";
+  type: 'page' | 'blogpost' | 'comment' | 'attachment';
   title: string;
-  status: "current" | "draft" | "trashed";
+  status: 'current' | 'draft' | 'trashed';
   space?: ConfluenceSpace;
   version?: ConfluenceVersion;
   ancestors?: ConfluencePage[];

@@ -1,15 +1,10 @@
-import { z } from "zod";
-import { JiraClient } from "../../jira/client.js";
+import { z } from 'zod';
+import { JiraClient } from '../../jira/client.js';
 
 export const transitionJiraIssueSchema = z.object({
-  issueIdOrKey: z.string().describe("Jira issue ID or key"),
-  transitionId: z
-    .string()
-    .describe("Transition ID from getTransitionsForJiraIssue"),
-  comment: z
-    .string()
-    .optional()
-    .describe("Optional comment to post during the transition"),
+  issueIdOrKey: z.string().describe('Jira issue ID or key'),
+  transitionId: z.string().describe('Transition ID from getTransitionsForJiraIssue'),
+  comment: z.string().optional().describe('Optional comment to post during the transition'),
   resolution: z
     .string()
     .optional()
@@ -18,9 +13,7 @@ export const transitionJiraIssueSchema = z.object({
     ),
 });
 
-export type TransitionJiraIssueInput = z.infer<
-  typeof transitionJiraIssueSchema
->;
+export type TransitionJiraIssueInput = z.infer<typeof transitionJiraIssueSchema>;
 
 export async function transitionJiraIssue(
   client: JiraClient,

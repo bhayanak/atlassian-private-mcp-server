@@ -1,12 +1,10 @@
-import { z } from "zod";
-import { JiraClient } from "../../jira/client.js";
+import { z } from 'zod';
+import { JiraClient } from '../../jira/client.js';
 
 export const addWorklogToJiraIssueSchema = z.object({
-  issueIdOrKey: z.string().describe("Jira issue ID or key"),
-  timeSpent: z
-    .string()
-    .describe("Time spent in Jira duration format, e.g. '2h 30m', '1d'"),
-  comment: z.string().optional().describe("Optional worklog comment"),
+  issueIdOrKey: z.string().describe('Jira issue ID or key'),
+  timeSpent: z.string().describe("Time spent in Jira duration format, e.g. '2h 30m', '1d'"),
+  comment: z.string().optional().describe('Optional worklog comment'),
   started: z
     .string()
     .optional()
@@ -15,9 +13,7 @@ export const addWorklogToJiraIssueSchema = z.object({
     ),
 });
 
-export type AddWorklogToJiraIssueInput = z.infer<
-  typeof addWorklogToJiraIssueSchema
->;
+export type AddWorklogToJiraIssueInput = z.infer<typeof addWorklogToJiraIssueSchema>;
 
 export async function addWorklogToJiraIssue(
   client: JiraClient,
@@ -34,10 +30,7 @@ export async function addWorklogToJiraIssue(
     timeSpent: string;
     timeSpentSeconds: number;
     author: { displayName: string };
-  }>(
-    `/rest/api/2/issue/${encodeURIComponent(input.issueIdOrKey)}/worklog`,
-    payload
-  );
+  }>(`/rest/api/2/issue/${encodeURIComponent(input.issueIdOrKey)}/worklog`, payload);
 
   return `Worklog added to ${input.issueIdOrKey}\nWorklog ID: ${result.id}\nTime Spent: ${result.timeSpent} (${result.timeSpentSeconds}s)\nAuthor: ${result.author?.displayName}`;
 }

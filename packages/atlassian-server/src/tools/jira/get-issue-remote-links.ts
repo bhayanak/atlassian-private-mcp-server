@@ -1,14 +1,12 @@
-import { z } from "zod";
-import { JiraClient } from "../../jira/client.js";
-import { JiraRemoteLink } from "../../jira/types.js";
+import { z } from 'zod';
+import { JiraClient } from '../../jira/client.js';
+import { JiraRemoteLink } from '../../jira/types.js';
 
 export const getJiraIssueRemoteIssueLinksSchema = z.object({
-  issueIdOrKey: z.string().describe("Jira issue ID or key"),
+  issueIdOrKey: z.string().describe('Jira issue ID or key'),
 });
 
-export type GetJiraIssueRemoteIssueLinksInput = z.infer<
-  typeof getJiraIssueRemoteIssueLinksSchema
->;
+export type GetJiraIssueRemoteIssueLinksInput = z.infer<typeof getJiraIssueRemoteIssueLinksSchema>;
 
 export async function getJiraIssueRemoteIssueLinks(
   client: JiraClient,
@@ -35,7 +33,7 @@ export async function getJiraIssueRemoteIssueLinks(
     if (link.object.summary) {
       output += `  Summary: ${link.object.summary}\n`;
     }
-    output += "\n";
+    output += '\n';
   }
   return output;
 }

@@ -1,18 +1,13 @@
-import { z } from "zod";
-import { ConfluenceClient } from "../../confluence/client.js";
-import { ConfluencePageList } from "../../confluence/types.js";
+import { z } from 'zod';
+import { ConfluenceClient } from '../../confluence/client.js';
+import { ConfluencePageList } from '../../confluence/types.js';
 
 export const getConfluenceCommentChildrenSchema = z.object({
-  commentId: z.string().describe("Parent comment ID"),
-  maxResults: z
-    .number()
-    .optional()
-    .describe("Max reply comments to return (default: 25)"),
+  commentId: z.string().describe('Parent comment ID'),
+  maxResults: z.number().optional().describe('Max reply comments to return (default: 25)'),
 });
 
-export type GetConfluenceCommentChildrenInput = z.infer<
-  typeof getConfluenceCommentChildrenSchema
->;
+export type GetConfluenceCommentChildrenInput = z.infer<typeof getConfluenceCommentChildrenSchema>;
 
 export async function getConfluenceCommentChildren(
   client: ConfluenceClient,
@@ -21,7 +16,7 @@ export async function getConfluenceCommentChildren(
   const result = await client.get<ConfluencePageList>(
     `/rest/api/content/${encodeURIComponent(input.commentId)}/child/comment`,
     {
-      expand: "body.view,version",
+      expand: 'body.view,version',
       limit: input.maxResults ?? 25,
     }
   );
@@ -35,9 +30,9 @@ export async function getConfluenceCommentChildren(
   for (const reply of replies) {
     const author = reply.version?.by;
     const date = reply.version?.when;
-    const body = reply.body?.view?.value || reply.body?.storage?.value || "";
-    output += `[${reply.id}] ${author?.displayName ?? "Unknown"} (${date ? date.split("T")[0] : "?"}):\n`;
-    output += `  ${body.replace(/<[^>]*>/g, "").slice(0, 500)}\n\n`;
+    const body = reply.body?.view?.value || reply.body?.storage?.value || '';
+    output += `[${reply.id}] ${author?.displayName ?? 'Unknown'} (${date ? date.split('T')[0] : '?'}):\n`;
+    output += `  ${body.replace(/<[^>]*>/g, '').slice(0, 500)}\n\n`;
   }
   return output;
 }

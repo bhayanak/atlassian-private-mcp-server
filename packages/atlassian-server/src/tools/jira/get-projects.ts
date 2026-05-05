@@ -1,29 +1,24 @@
-import { z } from "zod";
-import { JiraClient } from "../../jira/client.js";
-import { JiraProject } from "../../jira/types.js";
+import { z } from 'zod';
+import { JiraClient } from '../../jira/client.js';
+import { JiraProject } from '../../jira/types.js';
 
 export const getVisibleJiraProjectsSchema = z.object({
-  maxResults: z
-    .number()
-    .optional()
-    .describe("Maximum number of projects to return (default: 50)"),
-  startAt: z.number().optional().describe("Pagination offset (default: 0)"),
+  maxResults: z.number().optional().describe('Maximum number of projects to return (default: 50)'),
+  startAt: z.number().optional().describe('Pagination offset (default: 0)'),
   type: z
-    .enum(["software", "business", "service_desk"])
+    .enum(['software', 'business', 'service_desk'])
     .optional()
-    .describe("Filter by project type"),
+    .describe('Filter by project type'),
 });
 
-export type GetVisibleJiraProjectsInput = z.infer<
-  typeof getVisibleJiraProjectsSchema
->;
+export type GetVisibleJiraProjectsInput = z.infer<typeof getVisibleJiraProjectsSchema>;
 
 export async function getVisibleJiraProjects(
   client: JiraClient,
   input: GetVisibleJiraProjectsInput
 ): Promise<string> {
   const params: Record<string, string | number | undefined> = {
-    expand: "description,lead",
+    expand: 'description,lead',
     maxResults: input.maxResults,
     startAt: input.startAt,
   };
@@ -31,13 +26,10 @@ export async function getVisibleJiraProjects(
     params.typeKey = input.type;
   }
 
-  const projects = await client.get<JiraProject[]>(
-    "/rest/api/2/project",
-    params
-  );
+  const projects = await client.get<JiraProject[]>('/rest/api/2/project', params);
 
   if (!projects || projects.length === 0) {
-    return "No projects found.";
+    return 'No projects found.';
   }
 
   let output = `Visible projects (${projects.length}):\n\n`;
@@ -49,7 +41,7 @@ export async function getVisibleJiraProjects(
     if (p.lead) {
       output += ` | Lead: ${p.lead.displayName} (${p.lead.name})`;
     }
-    output += "\n";
+    output += '\n';
     if (p.description) {
       output += `  ${p.description.slice(0, 100)}\n`;
     }

@@ -1,34 +1,30 @@
-import { z } from "zod";
-import { ConfluenceClient } from "../../confluence/client.js";
-import { ConfluencePageList } from "../../confluence/types.js";
+import { z } from 'zod';
+import { ConfluenceClient } from '../../confluence/client.js';
+import { ConfluencePageList } from '../../confluence/types.js';
 
 export const getConfluencePageDescendantsSchema = z.object({
-  pageId: z.string().describe("Parent page ID"),
+  pageId: z.string().describe('Parent page ID'),
   depth: z
-    .enum(["all", "1"])
+    .enum(['all', '1'])
     .optional()
     .describe("'1' for direct children only (default), 'all' for full subtree"),
-  maxResults: z
-    .number()
-    .optional()
-    .describe("Max pages to return per level (default: 25)"),
+  maxResults: z.number().optional().describe('Max pages to return per level (default: 25)'),
 });
 
-export type GetConfluencePageDescendantsInput = z.infer<
-  typeof getConfluencePageDescendantsSchema
->;
+export type GetConfluencePageDescendantsInput = z.infer<typeof getConfluencePageDescendantsSchema>;
 
 export async function getConfluencePageDescendants(
   client: ConfluenceClient,
   input: GetConfluencePageDescendantsInput,
   baseUrl: string
 ): Promise<string> {
-  const endpoint = input.depth === "all"
-    ? `/rest/api/content/${encodeURIComponent(input.pageId)}/descendant/page`
-    : `/rest/api/content/${encodeURIComponent(input.pageId)}/child/page`;
+  const endpoint =
+    input.depth === 'all'
+      ? `/rest/api/content/${encodeURIComponent(input.pageId)}/descendant/page`
+      : `/rest/api/content/${encodeURIComponent(input.pageId)}/child/page`;
 
   const result = await client.get<ConfluencePageList>(endpoint, {
-    expand: "version",
+    expand: 'version',
     limit: input.maxResults ?? 25,
   });
 
@@ -46,7 +42,7 @@ export async function getConfluencePageDescendants(
     if (page._links?.webui) {
       output += `\n  URL: ${baseUrl}${page._links.webui}`;
     }
-    output += "\n";
+    output += '\n';
   }
   return output;
 }

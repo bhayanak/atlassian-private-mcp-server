@@ -1,13 +1,10 @@
-import { z } from "zod";
-import { ConfluenceClient } from "../../confluence/client.js";
-import { ConfluencePageList, ConfluencePage } from "../../confluence/types.js";
+import { z } from 'zod';
+import { ConfluenceClient } from '../../confluence/client.js';
+import { ConfluencePageList, ConfluencePage } from '../../confluence/types.js';
 
 export const getConfluencePageFooterCommentsSchema = z.object({
-  pageId: z.string().describe("Confluence page ID"),
-  maxResults: z
-    .number()
-    .optional()
-    .describe("Max comments to return (default: 25)"),
+  pageId: z.string().describe('Confluence page ID'),
+  maxResults: z.number().optional().describe('Max comments to return (default: 25)'),
 });
 
 export type GetConfluencePageFooterCommentsInput = z.infer<
@@ -21,9 +18,9 @@ export async function getConfluencePageFooterComments(
   const result = await client.get<ConfluencePageList>(
     `/rest/api/content/${encodeURIComponent(input.pageId)}/child/comment`,
     {
-      expand: "body.view,version",
+      expand: 'body.view,version',
       limit: input.maxResults ?? 25,
-      depth: "all",
+      depth: 'all',
     }
   );
 
@@ -39,9 +36,9 @@ export async function getConfluencePageFooterComments(
   for (const comment of comments) {
     const author = comment.version?.by;
     const date = comment.version?.when;
-    const body = comment.body?.view?.value || comment.body?.storage?.value || "";
-    output += `[${comment.id}] ${author?.displayName ?? "Unknown"} (${date ? date.split("T")[0] : "?"}):\n`;
-    output += `  ${body.replace(/<[^>]*>/g, "").slice(0, 500)}\n\n`;
+    const body = comment.body?.view?.value || comment.body?.storage?.value || '';
+    output += `[${comment.id}] ${author?.displayName ?? 'Unknown'} (${date ? date.split('T')[0] : '?'}):\n`;
+    output += `  ${body.replace(/<[^>]*>/g, '').slice(0, 500)}\n\n`;
   }
   return output;
 }

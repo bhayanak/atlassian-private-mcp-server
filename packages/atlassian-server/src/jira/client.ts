@@ -1,6 +1,6 @@
-import { JiraConfig } from "../config.js";
-import { buildAuthHeader } from "../utils/auth.js";
-import { JiraServerInfo } from "./types.js";
+import { JiraConfig } from '../config.js';
+import { buildAuthHeader } from '../utils/auth.js';
+import { JiraServerInfo } from './types.js';
 
 export class JiraApiError extends Error {
   constructor(
@@ -9,7 +9,7 @@ export class JiraApiError extends Error {
     public readonly body: string
   ) {
     super(`Jira API error ${status} ${statusText}: ${body}`);
-    this.name = "JiraApiError";
+    this.name = 'JiraApiError';
   }
 }
 
@@ -26,7 +26,7 @@ export class JiraClient {
   }
 
   async getServerInfo(): Promise<JiraServerInfo> {
-    return this.get<JiraServerInfo>("/rest/api/2/serverInfo");
+    return this.get<JiraServerInfo>('/rest/api/2/serverInfo');
   }
 
   async getServerVersion(): Promise<number[]> {
@@ -60,10 +60,10 @@ export class JiraClient {
     }
 
     const response = await fetch(url.toString(), {
-      method: "GET",
+      method: 'GET',
       headers: {
         Authorization: this.authHeader,
-        Accept: "application/json",
+        Accept: 'application/json',
       },
       signal: AbortSignal.timeout(this.timeoutMs),
     });
@@ -78,12 +78,12 @@ export class JiraClient {
 
   async post<T>(path: string, body: unknown): Promise<T> {
     const response = await fetch(`${this.baseUrl}${path}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
         Authorization: this.authHeader,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Atlassian-Token": "no-check",
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-Atlassian-Token': 'no-check',
       },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(this.timeoutMs),
@@ -101,12 +101,12 @@ export class JiraClient {
 
   async put<T>(path: string, body: unknown): Promise<T> {
     const response = await fetch(`${this.baseUrl}${path}`, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
         Authorization: this.authHeader,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Atlassian-Token": "no-check",
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-Atlassian-Token': 'no-check',
       },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(this.timeoutMs),
@@ -125,10 +125,10 @@ export class JiraClient {
 
   async delete(path: string): Promise<void> {
     const response = await fetch(`${this.baseUrl}${path}`, {
-      method: "DELETE",
+      method: 'DELETE',
       headers: {
         Authorization: this.authHeader,
-        "X-Atlassian-Token": "no-check",
+        'X-Atlassian-Token': 'no-check',
       },
       signal: AbortSignal.timeout(this.timeoutMs),
     });
