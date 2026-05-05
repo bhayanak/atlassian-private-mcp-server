@@ -1,0 +1,27 @@
+{
+  "name": "atlassian-mcp-private",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "dev": "pnpm --filter atlassian-server run dev",
+    "test": "pnpm --filter atlassian-server run test",
+    "test:coverage": "pnpm --filter atlassian-server run test:coverage",
+    "lint": "pnpm --filter atlassian-server run lint",
+    "lint:fix": "pnpm --filter atlassian-server run lint:fix",
+    "typecheck": "pnpm -r run typecheck",
+    "format": "pnpm --filter atlassian-server run format",
+    "format:fix": "pnpm --filter atlassian-server run format:fix",
+    "validate": "pnpm --filter atlassian-server run validate",
+    "ci": "pnpm --filter atlassian-server run ci",
+    "package": "pnpm --filter atlassian-vscode-extension run package",
+    "generate-logo": "tsx scripts/generate-logo.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.4",
+    "sharp": "^0.33.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

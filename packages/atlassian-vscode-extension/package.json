@@ -1,0 +1,141 @@
+{
+    "name": "atlassian-vscode-extension",
+    "displayName": "Atlassian Private MCP Server",
+    "description": "MCP server for private/self-hosted Jira Data Center and Confluence Server/DC instances — integrates with GitHub Copilot Chat",
+    "publisher": "bhayanak",
+    "version": "0.1.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bhayanak/atlassian-mcp-private.git"
+    },
+    "engines": {
+        "vscode": "^1.99.0"
+    },
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./dist/extension.js",
+    "categories": [
+        "AI",
+        "Chat"
+    ],
+    "keywords": [
+        "mcp",
+        "atlassian",
+        "jira",
+        "confluence",
+        "copilot",
+        "ai",
+        "data-center",
+        "self-hosted"
+    ],
+    "icon": "logo.png",
+    "license": "MIT",
+    "contributes": {
+        "mcpServerDefinitionProviders": [
+            {
+                "id": "atlassian-private-mcp",
+                "label": "Atlassian Private MCP Server"
+            }
+        ],
+        "configuration": {
+            "title": "Atlassian Private MCP",
+            "properties": {
+                "atlassianPrivateMcp.jiraBaseUrl": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Jira Data Center base URL (e.g., https://jira.yourcompany.com)",
+                    "order": 1
+                },
+                "atlassianPrivateMcp.jiraAuthType": {
+                    "type": "string",
+                    "default": "pat",
+                    "enum": [
+                        "pat",
+                        "basic"
+                    ],
+                    "enumDescriptions": [
+                        "Personal Access Token (recommended for Jira DC 8.14+)",
+                        "Basic Authentication (username + password)"
+                    ],
+                    "description": "Jira authentication type",
+                    "order": 2
+                },
+                "atlassianPrivateMcp.jiraPat": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Jira Personal Access Token (for PAT auth)",
+                    "order": 3
+                },
+                "atlassianPrivateMcp.jiraUsername": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Jira username (for Basic auth only)",
+                    "order": 4
+                },
+                "atlassianPrivateMcp.jiraPassword": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Jira password (for Basic auth only)",
+                    "order": 5
+                },
+                "atlassianPrivateMcp.confluenceBaseUrl": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Confluence Server/DC base URL (e.g., https://confluence.yourcompany.com)",
+                    "order": 6
+                },
+                "atlassianPrivateMcp.confluenceAuthType": {
+                    "type": "string",
+                    "default": "pat",
+                    "enum": [
+                        "pat",
+                        "basic"
+                    ],
+                    "enumDescriptions": [
+                        "Personal Access Token (recommended for Confluence DC 7.9+)",
+                        "Basic Authentication (username + password)"
+                    ],
+                    "description": "Confluence authentication type",
+                    "order": 7
+                },
+                "atlassianPrivateMcp.confluencePat": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Confluence Personal Access Token (for PAT auth)",
+                    "order": 8
+                },
+                "atlassianPrivateMcp.confluenceUsername": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Confluence username (for Basic auth only)",
+                    "order": 9
+                },
+                "atlassianPrivateMcp.confluencePassword": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Confluence password (for Basic auth only)",
+                    "order": 10
+                },
+                "atlassianPrivateMcp.tlsRejectUnauthorized": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Reject self-signed TLS certificates (disable for internal CAs)",
+                    "order": 11
+                }
+            }
+        }
+    },
+    "scripts": {
+        "build": "node build.cjs",
+        "package": "node build.cjs && npx @vscode/vsce package --no-dependencies --out atlassian-private-mcp-0.1.0.vsix",
+        "typecheck": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "@types/vscode": "^1.99.0",
+        "esbuild": "^0.21.0",
+        "typescript": "^5.0.0",
+        "@vscode/vsce": "^3.0.0"
+    }
+}
