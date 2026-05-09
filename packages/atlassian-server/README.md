@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../../logo.svg" width="128" height="128" alt="Atlassian Private MCP Server" />
+  <img src="logo.png" width="256" height="256" alt="Atlassian Private MCP Server" />
 </p>
 
 # Atlassian Private MCP Server
