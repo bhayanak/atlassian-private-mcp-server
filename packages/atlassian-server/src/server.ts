@@ -446,15 +446,10 @@ export function createServer(config: AppConfig): McpServer {
 
   server.tool(
     'fetch',
-    'Generic HTTP fetch for Atlassian REST API endpoints not covered by other tools. Restricted to configured Jira/Confluence base URLs only.',
+    'Generic HTTP fetch for Atlassian REST API endpoints not covered by other tools. Restricted to configured Jira/Confluence base URLs only. Supports JSON and binary (image) responses.',
     fetchSchema.shape,
     async (args) => ({
-      content: [
-        {
-          type: 'text',
-          text: await fetchTool(jiraClient, confluenceClient, jiraBaseUrl, confluenceBaseUrl, args),
-        },
-      ],
+      content: await fetchTool(jiraClient, confluenceClient, jiraBaseUrl, confluenceBaseUrl, args),
     })
   );
 

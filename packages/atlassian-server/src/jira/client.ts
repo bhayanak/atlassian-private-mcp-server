@@ -138,4 +138,37 @@ export class JiraClient {
       throw new JiraApiError(response.status, response.statusText, body);
     }
   }
+
+  async getRawResponse(
+    path: string,
+    method: string = 'GET',
+    body?: string,
+    extraHeaders?: Record<string, string>
+  ): Promise<Response> {
+    const url = `${this.baseUrl}${path}`;
+    const headers: Record<string, string> = {
+      Authorization: this.authHeader,
+      ...extraHeaders,
+    };
+    if (method === 'GET') {
+      // Don't force Accept: application/json — let server decide
+    } else if (body) {
+      headers['Content-Type'] = 'application/json';
+      headers['X-Atlassian-Token'] = 'no-check';
+    }
+
+    const response = await fetch(url, {
+      method,
+      headers,
+      body: method !== 'GET' && method !== 'DELETE' ? body : undefined,
+      signal: AbortSignal.timeout(this.timeoutMs),
+    });
+
+    if (!response.ok) {
+      const respBody = await response.text();
+      throw new JiraApiError(response.status, response.statusText, respBody);
+    }
+
+    return response;
+  }
 }

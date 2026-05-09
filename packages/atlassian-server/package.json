@@ -1,6 +1,6 @@
 {
   "name": "atlassian-server",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for private/self-hosted Atlassian Jira and Confluence instances (Data Center/Server)",
   "license": "MIT",
   "type": "module",

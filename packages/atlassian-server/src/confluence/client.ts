@@ -110,4 +110,35 @@ export class ConfluenceClient {
       throw new ConfluenceApiError(response.status, response.statusText, body);
     }
   }
+
+  async getRawResponse(
+    path: string,
+    method: string = 'GET',
+    body?: string,
+    extraHeaders?: Record<string, string>
+  ): Promise<Response> {
+    const url = `${this.baseUrl}${path}`;
+    const headers: Record<string, string> = {
+      Authorization: this.authHeader,
+      ...extraHeaders,
+    };
+    if (method !== 'GET' && body) {
+      headers['Content-Type'] = 'application/json';
+      headers['X-Atlassian-Token'] = 'no-check';
+    }
+
+    const response = await fetch(url, {
+      method,
+      headers,
+      body: method !== 'GET' && method !== 'DELETE' ? body : undefined,
+      signal: AbortSignal.timeout(this.timeoutMs),
+    });
+
+    if (!response.ok) {
+      const respBody = await response.text();
+      throw new ConfluenceApiError(response.status, response.statusText, respBody);
+    }
+
+    return response;
+  }
 }

@@ -3,7 +3,7 @@
     "displayName": "Atlassian Private MCP Server",
     "description": "MCP server for private/self-hosted Jira Data Center and Confluence Server/DC instances — integrates with GitHub Copilot Chat",
     "publisher": "bhayanak",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/bhayanak/atlassian-mcp-private.git"
@@ -128,7 +128,7 @@
     },
     "scripts": {
         "build": "node build.cjs",
-        "package": "node build.cjs && npx @vscode/vsce package --no-dependencies --out atlassian-private-mcp-0.1.0.vsix",
+        "package": "pnpm run build && vsce package --out atlassian-private-mcp-$(node -p \"require('./package.json').version\").vsix",
         "typecheck": "tsc --noEmit"
     },
     "devDependencies": {

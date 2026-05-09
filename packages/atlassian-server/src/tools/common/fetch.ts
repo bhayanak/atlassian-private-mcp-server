@@ -19,69 +19,90 @@ export const fetchSchema = z.object({
 
 export type FetchInput = z.infer<typeof fetchSchema>;
 
+type TextContent = { type: 'text'; text: string };
+type ImageContent = { type: 'image'; data: string; mimeType: string };
+export type FetchContent = TextContent | ImageContent;
+
+const IMAGE_MIME_TYPES = new Set([
+  'image/png',
+  'image/jpeg',
+  'image/gif',
+  'image/webp',
+  'image/svg+xml',
+  'image/bmp',
+  'image/tiff',
+]);
+
+function extractMimeType(contentType: string): string {
+  return (contentType.split(';')[0] ?? '').trim().toLowerCase();
+}
+
+function isImageContentType(contentType: string | null): boolean {
+  if (!contentType) return false;
+  return IMAGE_MIME_TYPES.has(extractMimeType(contentType));
+}
+
+function isJsonContentType(contentType: string | null): boolean {
+  if (!contentType) return false;
+  const mimeType = extractMimeType(contentType);
+  return mimeType === 'application/json' || mimeType.endsWith('+json');
+}
+
+async function buildContentFromResponse(response: Response): Promise<FetchContent[]> {
+  const contentType = response.headers.get('content-type');
+
+  if (isImageContentType(contentType)) {
+    const mimeType = extractMimeType(contentType!);
+    const buffer = Buffer.from(await response.arrayBuffer());
+    return [{ type: 'image', data: buffer.toString('base64'), mimeType }];
+  }
+
+  if (isJsonContentType(contentType)) {
+    const json = await response.json();
+    return [{ type: 'text', text: JSON.stringify(json, null, 2) }];
+  }
+
+  // For all other content types (text/plain, text/html, application/octet-stream, etc.)
+  // return as text with content-type info
+  const text = await response.text();
+  const prefix = contentType ? `Content-Type: ${contentType}\n\n` : '';
+  return [{ type: 'text', text: `${prefix}${text}` }];
+}
+
 export async function fetchTool(
   jiraClient: JiraClient,
   confluenceClient: ConfluenceClient,
   jiraBaseUrl: string,
   confluenceBaseUrl: string,
   input: FetchInput
-): Promise<string> {
+): Promise<FetchContent[]> {
   // SSRF protection: validate URL starts with configured base URLs
   const isJiraUrl = input.url.startsWith(jiraBaseUrl);
   const isConfluenceUrl = input.url.startsWith(confluenceBaseUrl);
 
   if (!isJiraUrl && !isConfluenceUrl) {
-    return `Error: URL must begin with "${jiraBaseUrl}" or "${confluenceBaseUrl}". Refusing to fetch arbitrary URLs for SSRF protection.`;
+    return [
+      {
+        type: 'text',
+        text: `Error: URL must begin with "${jiraBaseUrl}" or "${confluenceBaseUrl}". Refusing to fetch arbitrary URLs for SSRF protection.`,
+      },
+    ];
   }
 
   const method = input.method || 'GET';
+  const client = isJiraUrl ? jiraClient : confluenceClient;
+  const baseUrl = isJiraUrl ? jiraBaseUrl : confluenceBaseUrl;
+  const path = input.url.slice(baseUrl.length);
 
-  // Determine which client to use based on URL prefix
-  if (isJiraUrl) {
-    const path = input.url.slice(jiraBaseUrl.length);
-    switch (method) {
-      case 'GET':
-        const getResult = await jiraClient.get<unknown>(path);
-        return JSON.stringify(getResult, null, 2);
-      case 'POST':
-        const postResult = await jiraClient.post<unknown>(
-          path,
-          input.body ? JSON.parse(input.body) : {}
-        );
-        return JSON.stringify(postResult, null, 2);
-      case 'PUT':
-        const putResult = await jiraClient.put<unknown>(
-          path,
-          input.body ? JSON.parse(input.body) : {}
-        );
-        return JSON.stringify(putResult, null, 2);
-      case 'DELETE':
-        await jiraClient.delete(path);
-        return 'DELETE successful (204 No Content)';
+  if (method === 'DELETE') {
+    if (isJiraUrl) {
+      await jiraClient.delete(path);
+    } else {
+      await confluenceClient.delete(path);
     }
-  } else {
-    const path = input.url.slice(confluenceBaseUrl.length);
-    switch (method) {
-      case 'GET':
-        const getResult = await confluenceClient.get<unknown>(path);
-        return JSON.stringify(getResult, null, 2);
-      case 'POST':
-        const postResult = await confluenceClient.post<unknown>(
-          path,
-          input.body ? JSON.parse(input.body) : {}
-        );
-        return JSON.stringify(postResult, null, 2);
-      case 'PUT':
-        const putResult = await confluenceClient.put<unknown>(
-          path,
-          input.body ? JSON.parse(input.body) : {}
-        );
-        return JSON.stringify(putResult, null, 2);
-      case 'DELETE':
-        await confluenceClient.delete(path);
-        return 'DELETE successful (204 No Content)';
-    }
+    return [{ type: 'text', text: 'DELETE successful (204 No Content)' }];
   }
 
-  return 'Unknown method';
+  const response = await client.getRawResponse(path, method, input.body, input.headers);
+  return buildContentFromResponse(response);
 }
